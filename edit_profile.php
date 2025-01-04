@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     unlink($user['profile_picture']);
                 }
                 $profile_picture = $upload_path;
+                $_SESSION['profile_picture'] = $upload_path; // Update session profile picture
             }
         }
     }
@@ -69,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile - Social Media App</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -77,6 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="navbar-nav">
                 <a href="index.php" class="nav-link">Feed</a>
                 <a href="profile.php" class="nav-link active">Profile</a>
+                <div class="theme-switch">
+                    <button id="theme-toggle" class="theme-toggle-btn">
+                        <i class="fas fa-sun"></i>
+                        <span>Light</span>
+                    </button>
+                </div>
                 <a href="auth/logout.php" class="nav-link">Logout</a>
             </div>
         </nav>
@@ -86,11 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form action="" method="POST" enctype="multipart/form-data" class="edit-profile-form">
                 <div class="form-group">
                     <label for="profile_picture">Profile Picture</label>
-                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
-                    <?php if ($user['profile_picture']): ?>
-                        <img src="<?php echo htmlspecialchars($user['profile_picture']); ?>" 
+                    <div class="profile-picture-container">
+                        <img src="<?php echo !empty($user['profile_picture']) ? htmlspecialchars($user['profile_picture']) : './assets/profile_pictures/default_pic.png'; ?>" 
                              alt="Current Profile Picture" class="current-profile-pic">
-                    <?php endif; ?>
+                        <div class="picture-upload">
+                            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display: none;" onchange="previewProfilePicture(this)">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('profile_picture').click()">
+                                <i class="fas fa-camera"></i> Change Picture
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -117,5 +130,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </div>
     </div>
+    <script src="assets/js/theme.js"></script>
+    <script>
+        function previewProfilePicture(input) {
+            const currentPic = document.querySelector('.current-profile-pic');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    currentPic.src = e.target.result;
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 </html>

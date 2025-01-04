@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../config/db_connection.php';
+include '../config/CookieHandler.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['login'])) {
@@ -16,6 +17,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['profile_picture'] = $user['profile_picture'];
+            
+            // Handle Remember Me
+            if (isset($_POST['remember_me']) && $_POST['remember_me'] == 'on') {
+                $token = bin2hex(random_bytes(32));
+                CookieHandler::set('remember_token', $token);
+                
+                // Store token in database
+                $stmt = $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+                $stmt->execute([$token, $user['id']]);
+            }
+            
             header("Location: ../index.php");
             exit();
         } else {
@@ -60,13 +72,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Social Media App</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
+        <nav class="navbar">
+            <a href="../index.php" class="navbar-brand">Social Media</a>
+            <div class="theme-switch">
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <i class="fas fa-sun"></i>
+                    <span>Light</span>
+                </button>
+            </div>
+        </nav>
         <div class="auth-box">
             <!-- Login Form -->
-            <div class="form-container" id="loginForm">
-                <h2>Welcome Back!</h2>
+            <div class="form-container" id="loginForm" style="background-color: var(--card-bg); color: var(--text-color);">
+                <h2 style="color: var(--text-color);">Welcome Back!</h2>
                 <?php if (isset($login_error)): ?>
                     <div class="error"><?php echo $login_error; ?></div>
                 <?php endif; ?>
@@ -80,6 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="form-group">
                         <input type="password" id="password" name="password" placeholder="Password" required>
                     </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="remember_me"> Remember Me
+                        </label>
+                    </div>
                     <button type="submit" name="login" class="btn btn-primary">Sign In</button>
                 </form>
                 <div class="auth-footer">
@@ -89,8 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <!-- Registration Form -->
-            <div class="form-container" id="registerForm" style="display: none;">
-                <h2>Create Account</h2>
+            <div class="form-container" id="registerForm" style="display: none; background-color: var(--card-bg); color: var(--text-color);">
+                <h2 style="color: var(--text-color);">Create Account</h2>
                 <?php if (isset($register_error)): ?>
                     <div class="error"><?php echo $register_error; ?></div>
                 <?php endif; ?>
@@ -117,6 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
+    <script src="../assets/js/theme.js"></script>
     <script>
         function toggleForms() {
             const loginForm = document.getElementById('loginForm');

@@ -1,3 +1,37 @@
+html {
+    /* Dark theme (default) */
+    --bg-color: #18191a;
+    --text-color: #e4e6eb;
+    --nav-bg: #242526;
+    --card-bg: #242526;
+    --border-color: #3e4042;
+    --hover-bg: #3a3b3c;
+    --primary-color: #2d88ff;
+    --secondary-color: #42b72a;
+}
+
+html[data-theme="light"] {
+    --bg-color: #f0f2f5;
+    --text-color: #1c1e21;
+    --nav-bg: #ffffff;
+    --card-bg: #ffffff;
+    --border-color: #ddd;
+    --hover-bg: #f0f2f5;
+    --primary-color: #1877f2;
+    --secondary-color: #42b72a;
+}
+
+html[data-theme="dark"] {
+    --bg-color: #18191a;
+    --text-color: #e4e6eb;
+    --nav-bg: #242526;
+    --card-bg: #242526;
+    --border-color: #3e4042;
+    --hover-bg: #3a3b3c;
+    --primary-color: #2d88ff;
+    --secondary-color: #42b72a;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,10 +40,11 @@
 
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #1c1e21;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     line-height: 1.6;
     padding-top: 60px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .navbar {
@@ -17,13 +52,34 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background: white;
+    background: var(--nav-bg);
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
+}
+
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: var(--hover-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--border-color);
+}
+
+.theme-toggle-btn i {
+    font-size: 16px;
 }
 
 .navbar-brand {
@@ -48,7 +104,7 @@ body {
 }
 
 .nav-link {
-    color: #1c1e21;
+    color: var(--text-color);
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 20px;
@@ -104,13 +160,64 @@ body {
 }
 
 .form-container {
-    background-color: white;
+    background-color: var(--card-bg);
     padding: 40px 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     text-align: center;
     margin-bottom: 20px;
     width: 100%;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.form-container input[type="text"],
+.form-container input[type="password"],
+.form-container input[type="email"] {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    width: 100%;
+    border-radius: 6px;
+    margin: 8px 0;
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.form-container input[type="text"]:focus,
+.form-container input[type="password"]:focus,
+.form-container input[type="email"]:focus {
+    background-color: var(--hover-bg);
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.form-container input[type="text"]:focus,
+.form-container input[type="password"]:focus,
+.form-container input[type="email"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
+.form-container input[type="checkbox"] {
+    accent-color: var(--primary-color);
+}
+
+.form-container label {
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-container h2 {
+    color: var(--text-color);
+    margin-bottom: 25px;
+}
+
+.form-container .auth-footer p {
+    color: var(--text-color);
 }
 
 .form-container h2 {
@@ -170,7 +277,7 @@ body {
 
 .auth-footer p {
     margin-bottom: 10px;
-    color: #666;
+    color: var(--text-color);
 }
 
 .form-group {
@@ -191,14 +298,14 @@ body {
 }
 
 .feed-container {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
 
 .feed-header {
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     position: sticky;
     top: 0;
@@ -207,31 +314,36 @@ body {
 }
 
 .post-form {
-    background: white;
+    background: var(--card-bg);
     padding: 24px;
     border-radius: 12px;
     margin: 20px 0;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
 .post-form h3 {
     font-size: 1.2em;
-    color: #1c1e21;
+    color: var(--text-color);
     margin-bottom: 16px;
 }
 
 .post-form textarea {
-    background: #f0f2f5;
-    border: none;
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 16px;
     font-size: 1em;
-    transition: background-color 0.2s;
+    color: var(--text-color);
+    transition: all 0.2s ease;
 }
 
 .post-form textarea:focus {
-    background: #e4e6eb;
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
     outline: none;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
 }
 
 .post-form textarea {
@@ -245,19 +357,20 @@ body {
 }
 
 .posts {
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .post {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: box-shadow 0.3s ease;
+    color: var(--text-color);
 }
 
 .post:hover {
@@ -274,7 +387,7 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 10px;
-    color: #666;
+    color: var(--text-color);
 }
 
 .post-menu {
@@ -348,21 +461,35 @@ body {
 .post-form-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.post-form .btn {
+    min-width: 120px;
+    padding: 10px 20px;
+    font-size: 16px;
 }
 
 .image-upload-label {
     display: inline-flex;
     align-items: center;
-    padding: 8px 12px;
-    background: #f0f2f5;
-    border-radius: 4px;
+    padding: 10px 20px;
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
     cursor: pointer;
+    color: var(--text-color);
+    transition: background-color 0.2s;
 }
 
 .image-upload-label:hover {
-    background: #e4e6eb;
+    background: var(--border-color);
+}
+
+.image-upload-label i {
+    margin-right: 8px;
 }
 
 .image-preview-container {
@@ -442,15 +569,17 @@ input[type="file"] {
     padding: 12px 20px;
     border: none;
     border-radius: 24px;
-    background: #f0f2f5;
+    background: var(--hover-bg);
+    color: var(--text-color);
     font-size: 0.95em;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .search-container input:focus {
-    background: #e4e6eb;
+    background: var(--hover-bg);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    box-shadow: 0 0 0 2px var(--primary-color);
+    color: var(--text-color);
 }
 
 .search-results {
@@ -458,10 +587,10 @@ input[type="file"] {
     top: 100%;
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid #ddd;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     display: none;
     z-index: 1000;
 }
@@ -479,7 +608,7 @@ input[type="file"] {
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: #333;
+    color: var(--text-color);
 }
 
 .search-result img {
@@ -490,12 +619,12 @@ input[type="file"] {
 }
 
 .profile-header {
-    background: white;
+    background: var(--card-bg);
     padding: 40px;
     border-radius: 12px;
     margin-bottom: 30px;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .profile-picture {
@@ -522,12 +651,13 @@ input[type="file"] {
 
 /* Add new styles for edit profile page */
 .edit-profile-container {
-    background: white;
+    background: var(--card-bg);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     max-width: 800px;
     margin: 30px auto;
+    color: var(--text-color);
 }
 
 .edit-profile-form {
@@ -543,7 +673,7 @@ input[type="file"] {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #333;
+    color: var(--text-color);
 }
 
 .edit-profile-form input[type="text"],
@@ -551,9 +681,11 @@ input[type="file"] {
 .edit-profile-form textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 1em;
+    background: var(--hover-bg);
+    color: var(--text-color);
     transition: border-color 0.3s;
 }
 
@@ -566,12 +698,36 @@ input[type="file"] {
     min-height: 100px;
 }
 
-.current-profile-pic {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
     margin: 10px 0;
+}
+
+.current-profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     object-fit: cover;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.picture-upload {
+    text-align: center;
+}
+
+.picture-upload .btn {
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.picture-upload .btn i {
+    font-size: 1.1em;
 }
 
 .form-actions {
@@ -658,25 +814,105 @@ input[type="file"] {
     margin-bottom: 15px;
 }
 
+.comment-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
 .comment-form input[type="text"] {
-    width: calc(100% - 100px);
-    padding: 8px;
-    margin-right: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background: var(--hover-bg);
+    color: var(--text-color);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.comment-form input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
+.comment-form .btn-small {
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.comment-form .btn-small:hover {
+    background: #166fe5;
+}
+
+.comment-form .image-upload-label {
+    padding: 8px 16px;
+    background: var(--hover-bg);
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.comment-form .image-upload-label:hover {
+    background: var(--border-color);
+    border-color: var(--text-color);
+}
+
+.comment-form .image-upload-label i {
+    font-size: 16px;
 }
 
 .comment {
     padding: 8px;
     margin-bottom: 8px;
-    background-color: #f8f9fa;
+    background-color: var(--hover-bg);
     border-radius: 4px;
+    color: var(--text-color);
+    position: relative;
+}
+
+.comment-content {
+    margin: 5px 0;
+    word-wrap: break-word;
 }
 
 .comment-date {
     font-size: 0.8em;
     color: #666;
     margin-left: 10px;
+}
+
+.delete-comment-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 0.8em;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    float: right;
+}
+
+.delete-comment-btn:hover {
+    opacity: 1;
 }
 
 .logout-button {

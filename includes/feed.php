@@ -14,10 +14,16 @@ if (!isset($_SESSION['user_id'])) {
     <div class="navbar-nav">
         <a href="index.php" class="nav-link active">Feed</a>
         <a href="profile.php" class="nav-link">
-            <img src="<?php echo !empty($_SESSION['profile_picture']) ? htmlspecialchars($_SESSION['profile_picture']) : 'assets/images/default-avatar.png'; ?>" 
+            <img src="<?php echo !empty($_SESSION['profile_picture']) ? htmlspecialchars($_SESSION['profile_picture']) : 'assets/profile_pictures/default_pic.png'; ?>" 
                  alt="Profile" class="nav-profile-pic">
             Profile
         </a>
+        <div class="theme-switch">
+            <button id="theme-toggle" class="theme-toggle-btn">
+                <i class="fas fa-sun"></i>
+                <span>Light</span>
+            </button>
+        </div>
         <a href="auth/logout.php" class="nav-link">Logout</a>
     </div>
 </nav>
@@ -41,13 +47,13 @@ if (!isset($_SESSION['user_id'])) {
         <h3>Create a Post</h3>
         <form action="actions/create_post.php" method="POST" enctype="multipart/form-data">
             <textarea name="content" placeholder="What's on your mind?" required></textarea>
+            <div id="image-preview" class="image-preview-container"></div>
             <div class="post-form-footer">
                 <input type="file" name="post_image" accept="image/*" id="post_image" onchange="previewImage(this)">
-                <div id="image-preview" class="image-preview-container"></div>
                 <label for="post_image" class="image-upload-label">
-                    <i class="fas fa-image"></i> Add Image
+                    <i class="fas fa-image"></i> Add Photo
                 </label>
-                <button type="submit" class="btn">Post</button>
+                <button type="submit" class="btn">Share Post</button>
             </div>
         </form>
     </div>
@@ -137,7 +143,7 @@ if (!isset($_SESSION['user_id'])) {
                 
                 <!-- Comments Section -->
                 <div class="comments-section">
-                    <form action="actions/add_comment.php" method="POST" class="comment-form">
+                    <form onsubmit="submitComment(event, this)" class="comment-form" method="POST">
                         <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                         <input type="text" name="content" placeholder="Write a comment..." required>
                         <button type="submit" class="btn-small">Comment</button>
@@ -156,7 +162,7 @@ if (!isset($_SESSION['user_id'])) {
                     
                     foreach ($comments as $comment):
                     ?>
-                        <div class="comment">
+                        <div class="comment" id="comment-<?php echo $comment['id']; ?>">
                             <div class="comment-author-info">
                                 <img src="<?php echo !empty($comment['profile_picture']) ? htmlspecialchars($comment['profile_picture']) : 'assets/images/default-avatar.png'; ?>" 
                                      alt="Profile" class="comment-profile-pic">
@@ -164,8 +170,13 @@ if (!isset($_SESSION['user_id'])) {
                                     <strong><?php echo htmlspecialchars($comment['username']); ?></strong>
                                 </a>
                             </div>
-                            <?php echo htmlspecialchars($comment['content']); ?>
+                            <div class="comment-content"><?php echo htmlspecialchars($comment['content']); ?></div>
                             <span class="comment-date"><?php echo date('M d, Y H:i', strtotime($comment['created_at'])); ?></span>
+                            <?php if ($comment['user_id'] == $_SESSION['user_id']): ?>
+                                <button class="delete-comment-btn" data-comment-id="<?php echo $comment['id']; ?>">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>

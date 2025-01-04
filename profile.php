@@ -33,6 +33,7 @@ $posts = $posts_stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - Social Media App</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -46,12 +47,18 @@ $posts = $posts_stmt->fetchAll();
             <div class="navbar-nav">
                 <a href="index.php" class="nav-link">Feed</a>
                 <a href="profile.php" class="nav-link active">Profile</a>
+                <div class="theme-switch">
+                    <button id="theme-toggle" class="theme-toggle-btn">
+                        <i class="fas fa-sun"></i>
+                        <span>Light</span>
+                    </button>
+                </div>
                 <a href="auth/logout.php" class="nav-link">Logout</a>
             </div>
         </nav>
         <div class="profile-header">
             <div class="profile-info">
-                <img src="<?php echo !empty($user['profile_picture']) ? htmlspecialchars($user['profile_picture']) : './assets/images/default-avatar.png'; ?>" 
+                <img src="<?php echo !empty($user['profile_picture']) ? htmlspecialchars($user['profile_picture']) : './assets/profile_pictures/default_pic.png'; ?>" 
                      alt="Profile Picture" class="profile-picture">
                 <h1><?php echo htmlspecialchars($user['username']); ?></h1>
                 <p class="bio"><?php echo htmlspecialchars($user['bio'] ?? 'No bio yet.'); ?></p>
@@ -92,5 +99,6 @@ $posts = $posts_stmt->fetchAll();
         </div>
     </div>
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/theme.js"></script>
 </body>
 </html>
