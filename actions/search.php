@@ -1,16 +1,24 @@
 <?php
 /**
  * User Search Handler
- * Handles AJAX search requests for finding users by username or email
+ * 
+ * Provides user search functionality:
+ * - Authentication verification
+ * - Input sanitization
+ * - Database search with LIKE queries
+ * - Limited result set for performance
+ * - JSON response format
+ * 
+ * Rate limiting placeholder included for future implementation
  */
 
 session_start();
 include '../config/db_connection.php';
 include '../config/CookieHandler.php';
 
-// Initialize rate limiting
+// Initialize rate limiting (TODO: implement rate limiting)
 
-// Check authentication
+// Verify user authentication
 if (!isset($_SESSION['user_id'])) {
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Not authenticated']);

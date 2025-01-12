@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     
     // Handle profile picture upload
-    $profile_picture = $user['profile_picture']; // Keep existing picture by default
+    $profile_picture = $user['profile_picture'];
     
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
         $allowed = ['jpg', 'jpeg', 'png', 'gif'];
@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $filetype = pathinfo($filename, PATHINFO_EXTENSION);
         
         if (in_array(strtolower($filetype), $allowed)) {
-            // Create uploads directory if it doesn't exist
             if (!file_exists('uploads/profile_pictures')) {
                 mkdir('uploads/profile_pictures', 0777, true);
             }
@@ -38,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $upload_path = 'assets/uploads/profile_pictures/' . $new_filename;
             
             if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $upload_path)) {
-                // Delete old profile picture if it exists
                 if ($user['profile_picture'] && file_exists($user['profile_picture'])) {
                     unlink($user['profile_picture']);
                 }
@@ -56,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     ");
     
     if ($update_stmt->execute([$username, $email, $bio, $profile_picture, $user_id])) {
-        $_SESSION['username'] = $username; // Update session username
+        $_SESSION['username'] = $username;
         header("Location: profile.php?success=profile_updated");
         exit();
     }

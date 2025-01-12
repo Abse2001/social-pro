@@ -1,7 +1,18 @@
 <?php
+/**
+ * Post Edit Handler
+ * 
+ * Manages post editing functionality:
+ * - Authentication check
+ * - Post ownership verification
+ * - Content update
+ * - Redirect based on origin page
+ */
+
 session_start();
 include '../config/db_connection.php';
 
+// Check user authentication
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
@@ -20,7 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($post && $post['user_id'] == $user_id) {
         $update = $pdo->prepare("UPDATE posts SET content = ? WHERE id = ? AND user_id = ?");
         if ($update->execute([$content, $post_id, $user_id])) {
-            header("Location: ../index.php?success=post_updated");
+            // Get the referrer URL
+            $referrer = $_SERVER['HTTP_REFERER'];
+            if (strpos($referrer, 'profile.php') !== false) {
+                header("Location: ../profile.php?success=post_updated");
+            } else {
+                header("Location: ../index.php?success=post_updated");
+            }
         } else {
             header("Location: ../index.php?error=update_failed");
         }

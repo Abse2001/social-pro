@@ -61,6 +61,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     profile_picture VARCHAR(255) DEFAULT NULL,
     bio TEXT DEFAULT NULL,
+    remember_token VARCHAR(64) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```

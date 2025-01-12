@@ -84,21 +84,57 @@ $posts = $posts_stmt->fetchAll();
                     <div class="post-content">
                         <?php echo nl2br(htmlspecialchars($post['content'])); ?>
                     </div>
+                    <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
+                        <div id="edit-form-<?php echo $post['id']; ?>" class="edit-form" style="display: none;">
+                            <form action="actions/edit_post.php" method="POST">
+                                <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                                <textarea name="content" required><?php echo htmlspecialchars($post['content']); ?></textarea>
+                                <div class="form-actions">
+                                    <button type="submit" class="action-btn edit">
+                                        <i class="fas fa-check"></i> Save Changes
+                                    </button>
+                                    <button type="button" class="action-btn delete" onclick="hideEditForm(<?php echo $post['id']; ?>)">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    <?php endif; ?>
                     <div class="post-actions">
                         <?php if ($user_id == $_SESSION['user_id']): ?>
-                            <button onclick="showEditForm(<?php echo $post['id']; ?>)" class="btn-small">Edit</button>
-                            <form action="actions/delete_post.php" method="POST" style="display: inline;">
-                                <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                                <button type="submit" class="btn-small delete" 
-                                        onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
+                            <div class="post-action-buttons">
+                                <button onclick="showEditForm(<?php echo $post['id']; ?>)" class="action-btn edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <form action="actions/delete_post.php" method="POST" style="display: inline;">
+                                    <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                                    <button type="submit" class="action-btn delete" 
+                                            onclick="return confirm('Are you sure you want to delete this post?')">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
     </div>
-    <script src="assets/js/main.js"></script>
     <script src="assets/js/theme.js"></script>
+    <script>
+        function showEditForm(postId) {
+            const editForm = document.getElementById(`edit-form-${postId}`);
+            if (editForm) {
+                editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function hideEditForm(postId) {
+            const editForm = document.getElementById(`edit-form-${postId}`);
+            if (editForm) {
+                editForm.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

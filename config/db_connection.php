@@ -1,37 +1,57 @@
 <?php
-$host = 'localhost';
-$dbname = 'social_pro';
-$username = 'root';
-$password = '';
+// Database connection configuration
+$host = 'localhost';      // Database host (usually localhost for local development)
+$dbname = 'social_pro';   // Name of the database
+$username = 'root';       // MySQL username (default for XAMPP)
+$password = '';          // MySQL password (default empty for XAMPP)
 
+// Establish database connection and create tables if they don't exist
 try {
-    // First try to connect to MySQL server without specifying database
+    // First connect without database to check/create it
     $pdo = new PDO("mysql:host=$host", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // Enable error reporting
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);   // Set default fetch mode to associative array
     
-    // Check if database exists, if not create it
+    // Check if database exists, create if it doesn't
     $stmt = $pdo->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '$dbname'");
     if (!$stmt->fetch()) {
         $pdo->exec("CREATE DATABASE `$dbname`");
     }
     
-    // Connect to the specific database
+    // Reconnect with database selected
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-    // Create tables if they don't exist
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL,
+            username VARCHAR(50) NOT NULL UNIQUE,
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             profile_picture VARCHAR(255) DEFAULT NULL,
             bio TEXT DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+
+        -- Add remember_token column if it doesn't exist
+        SET @dbname = DATABASE();
+        SET @tablename = 'users';
+        SET @columnname = 'remember_token';
+        SET @preparedStatement = (SELECT IF(
+          (
+            SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE
+              TABLE_SCHEMA = @dbname
+              AND TABLE_NAME = @tablename
+              AND COLUMN_NAME = @columnname
+          ) > 0,
+          'SELECT 1',
+          'ALTER TABLE users ADD remember_token VARCHAR(64) DEFAULT NULL'
+        ));
+        PREPARE alterIfNotExists FROM @preparedStatement;
+        EXECUTE alterIfNotExists;
+        DEALLOCATE PREPARE alterIfNotExists;
 
         CREATE TABLE IF NOT EXISTS posts (
             id INT AUTO_INCREMENT PRIMARY KEY,

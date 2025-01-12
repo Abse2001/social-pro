@@ -1,23 +1,26 @@
 <?php
+// Initialize session and include required files
 session_start();
 include 'config/db_connection.php';
 include 'config/CookieHandler.php';
 
-// Check for remember me cookie if not logged in
+// Check for "Remember Me" functionality
+// If user is not logged in but has a remember token cookie
 if (!isset($_SESSION['user_id']) && CookieHandler::exists('remember_token')) {
     $token = CookieHandler::get('remember_token');
     
-    // Verify token and log user in
+    // Verify remember token and get user details
     $stmt = $pdo->prepare("SELECT * FROM users WHERE remember_token = ?");
     $stmt->execute([$token]);
     $user = $stmt->fetch();
     
+    // If valid token found, create session for user
     if ($user) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['profile_picture'] = $user['profile_picture'];
     } else {
-        // Invalid token, clear it
+        // If token is invalid, remove it
         CookieHandler::delete('remember_token');
     }
 }
@@ -26,7 +29,7 @@ if (!isset($_SESSION['user_id']) && CookieHandler::exists('remember_token')) {
 <html lang="en">
 <head>
     <script>
-        // Immediate theme initialization
+
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);

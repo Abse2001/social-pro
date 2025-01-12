@@ -3,6 +3,9 @@ session_start();
 include '../config/db_connection.php';
 include '../config/CookieHandler.php';
 
+// Variable to control which form to show
+$show_register_form = false;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['login'])) {
         // Login Process
@@ -35,9 +38,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     } 
     else if (isset($_POST['register'])) {
+        // Set to show registration form since we're processing a registration
+        $show_register_form = true;
+        
+        // Keep the entered values to repopulate the form
+        $entered_username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $entered_email = filter_input(INPUT_POST, 'reg_email', FILTER_SANITIZE_EMAIL);
+        
         // Registration Process
-        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-        $email = filter_input(INPUT_POST, 'reg_email', FILTER_SANITIZE_EMAIL);
+        $username = $entered_username;
+        $email = $entered_email;
         $password = $_POST['reg_password'];
         $confirm_password = $_POST['confirm_password'];
 
@@ -45,19 +55,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($password !== $confirm_password) {
             $register_error = "Passwords do not match";
         } else {
-            // Check if email already exists
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-            $stmt->execute([$email]);
+            // Check if username already exists
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+            $stmt->execute([$username]);
             if ($stmt->rowCount() > 0) {
-                $register_error = "Email already registered";
+                $register_error = "Username already taken";
             } else {
-                // Insert new user
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-                if ($stmt->execute([$username, $email, $hashed_password])) {
-                    $success_message = "Registration successful! Please login.";
+                // Check if email already exists
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+                $stmt->execute([$email]);
+                if ($stmt->rowCount() > 0) {
+                    $register_error = "Email already registered";
                 } else {
-                    $register_error = "Registration failed";
+                    // All checks passed, insert new user
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+                    
+                    try {
+                        if ($stmt->execute([$username, $email, $hashed_password])) {
+                            $success_message = "Registration successful! Please login.";
+                            $show_register_form = false; // Show login form after successful registration
+                        } else {
+                            $register_error = "Registration failed. Please try again.";
+                        }
+                    } catch (PDOException $e) {
+                        $register_error = "Registration failed. Please try again.";
+                    }
                 }
             }
         }
@@ -87,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </nav>
         <div class="auth-box">
             <!-- Login Form -->
-            <div class="form-container" id="loginForm" style="background-color: var(--card-bg); color: var(--text-color);">
+            <div class="form-container" id="loginForm" style="display: <?php echo !$show_register_form ? 'block' : 'none'; ?>; background-color: var(--card-bg); color: var(--text-color);">
                 <h2 style="color: var(--text-color);">Welcome Back!</h2>
                 <?php if (isset($login_error)): ?>
                     <div class="error"><?php echo $login_error; ?></div>
@@ -116,17 +139,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
 
             <!-- Registration Form -->
-            <div class="form-container" id="registerForm" style="display: none; background-color: var(--card-bg); color: var(--text-color);">
+            <div class="form-container" id="registerForm" style="display: <?php echo $show_register_form ? 'block' : 'none'; ?>; background-color: var(--card-bg); color: var(--text-color);">
                 <h2 style="color: var(--text-color);">Create Account</h2>
                 <?php if (isset($register_error)): ?>
-                    <div class="error"><?php echo $register_error; ?></div>
+                    <div class="error"><?php echo htmlspecialchars($register_error); ?></div>
                 <?php endif; ?>
                 <form method="POST" action="">
                     <div class="form-group">
-                        <input type="text" id="username" name="username" placeholder="Username" required>
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               placeholder="Username" 
+                               value="<?php echo isset($entered_username) ? htmlspecialchars($entered_username) : ''; ?>"
+                               required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="reg_email" name="reg_email" placeholder="Email" required>
+                        <input type="email" 
+                               id="reg_email" 
+                               name="reg_email" 
+                               placeholder="Email" 
+                               value="<?php echo isset($entered_email) ? htmlspecialchars($entered_email) : ''; ?>"
+                               required>
                     </div>
                     <div class="form-group">
                         <input type="password" id="reg_password" name="reg_password" placeholder="Password" required>
@@ -158,6 +191,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 registerForm.style.display = 'block';
             }
         }
+
+        // If there was a registration error, ensure the registration form is visible
+        <?php if ($show_register_form): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        });
+        <?php endif; ?>
     </script>
 </body>
 </html>

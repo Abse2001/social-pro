@@ -781,14 +781,50 @@ input[type="file"] {
     margin: 10px 0;
 }
 
-.btn-small {
-    padding: 5px 10px;
-    font-size: 0.9em;
-    margin-right: 5px;
+.post-action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-.btn-small.delete {
-    background-color: #dc3545;
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    background: var(--hover-bg);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+}
+
+.action-btn.edit {
+    background: var(--primary-color);
+    color: white;
+}
+
+.action-btn.edit:hover {
+    background: #1565c0;
+}
+
+.action-btn.delete {
+    background: #dc3545;
+    color: white;
+}
+
+.action-btn.delete:hover {
+    background: #c82333;
+}
+
+.action-btn i {
+    font-size: 0.9em;
 }
 
 .edit-form {
